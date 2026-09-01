@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CamRecon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex min-h-screen flex-col bg-slate-950 text-white">
+  <main class="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-10">
+    <header class="text-center">
+      <h1 class="text-2xl font-bold">CamRecon</h1>
+      <p class="mt-1 text-sm text-slate-400">Capturá una foto para identificar a la persona.</p>
+    </header>
+
+    <div class="overflow-hidden rounded-xl border border-slate-800 bg-black">
+      <video id="video" autoplay playsinline muted class="w-full"></video>
+    </div>
+
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <button
+      id="btn-activar-camara"
+      class="rounded-lg bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Activar cámara
+    </button>
+
+    <button
+      id="btn-capturar"
+      class="hidden rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Capturar y reconocer
+    </button>
+
+    <p id="estado" class="text-center text-sm text-slate-400">Tocá "Activar cámara" para dar permiso.</p>
+
+    <section id="resultado" class="flex flex-col gap-3"></section>
+  </main>
+
+  <footer class="py-6 text-center text-xs text-slate-600">
+    Copyright © 2026 - Designed &amp; Developed by Ing. Luis Africano
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

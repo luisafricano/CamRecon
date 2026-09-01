@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CamRecon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    /* Tailwind's utility classes (ej. "flex") pueden ganarle en cascada al atributo
+       hidden nativo. Esto fuerza a que [hidden] siempre oculte el elemento. */
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-white">
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar desktop -->
+    <aside class="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-slate-800 lg:bg-slate-900/50">
+      <div class="px-5 py-6">
+        <h1 class="text-lg font-bold">CamRecon</h1>
+        <p class="text-xs text-slate-400">Panel de administración</p>
+      </div>
+      <nav id="nav-desktop" class="flex flex-col gap-1 px-3"></nav>
+      <div class="mt-auto px-5 py-4 text-xs text-slate-500">
+        <a href="index.html" class="hover:text-slate-300">&larr; Demo de captura</a>
+        <button id="btn-cerrar-sesion" class="mt-2 block text-left text-red-400 hover:text-red-300">
+          Cerrar sesión
+        </button>
+        <p class="mt-3 text-[11px] leading-snug text-slate-600">
+          Copyright © 2026 - Designed &amp; Developed by Ing. Luis Africano
+        </p>
+      </div>
+    </aside>
+
+    <!-- Mobile top bar -->
+    <div class="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-slate-800 bg-slate-950 px-4 py-3 lg:hidden">
+      <h1 class="text-base font-bold">CamRecon</h1>
+      <button id="btn-menu" aria-label="Abrir menú" class="rounded-md p-2 hover:bg-slate-800">
+        <svg viewBox="0 0 16 16" fill="currentColor" class="size-5">
+          <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75Zm0 3.25a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 8Zm0 3.25a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile sidebar (overlay) -->
+    <div id="mobile-nav-overlay" hidden class="fixed inset-0 z-40 lg:hidden">
+      <div id="mobile-nav-backdrop" class="fixed inset-0 bg-black/70"></div>
+      <div class="fixed inset-y-0 left-0 flex w-64 flex-col bg-slate-900 p-4">
+        <div class="mb-4 flex items-center justify-between">
+          <span class="font-bold">Menú</span>
+          <button id="btn-cerrar-menu" class="rounded-md p-2 hover:bg-slate-800" aria-label="Cerrar menú">✕</button>
+        </div>
+        <nav id="nav-mobile" class="flex flex-col gap-1"></nav>
+        <button id="btn-cerrar-sesion-mobile" class="mt-auto pt-4 text-left text-sm text-red-400 hover:text-red-300">
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <main class="flex-1 px-4 pb-16 pt-20 lg:pt-8 lg:px-8">
+      <div class="mx-auto max-w-5xl">
+
+        <!-- Sección: Empleados -->
+        <section id="seccion-empleados" class="flex flex-col gap-6">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="text-xl font-bold">Empleados</h2>
+              <p class="text-sm text-slate-400">Alta de perfiles, búsqueda y recorrido registrado.</p>
+            </div>
+            <button id="btn-nuevo-empleado" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold hover:bg-indigo-500">
+              + Nuevo empleado
+            </button>
+          </div>
+
+          <input
+            id="buscador-empleados"
+            type="text"
+            placeholder="Buscar por nombre o legajo..."
+            class="w-full rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-sm placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
+          />
+
+          <div class="overflow-hidden rounded-xl border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-slate-400">
+                <tr>
+                  <th class="px-4 py-2"></th>
+                  <th class="px-4 py-2">Nombre</th>
+                  <th class="px-4 py-2">Apellido</th>
+                  <th class="px-4 py-2">Cargo</th>
+                  <th class="px-4 py-2">Fotos</th>
+                  <th class="px-4 py-2"></th>
+                </tr>
+              </thead>
+              <tbody id="tabla-empleados" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+          <p id="empleados-vacio" hidden class="text-center text-sm text-slate-500">No hay empleados cargados todavía.</p>
+        </section>
+
+        <!-- Sección: Cámaras en vivo -->
+        <section id="seccion-camaras-vivo" hidden class="flex flex-col gap-6">
+          <div>
+            <h2 class="text-xl font-bold">Cámaras en vivo</h2>
+            <p class="text-sm text-slate-400">
+              Activá cada cámara individualmente. Ver varias a la vez puede saturar cámaras económicas
+              (soportan pocas conexiones simultáneas) — si una no carga, probá desactivando otra.
+            </p>
+          </div>
+          <div id="grid-camaras-vivo" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
+          <p id="camaras-vivo-vacio" hidden class="text-center text-sm text-slate-500">
+            Todavía no hay cámaras configuradas. Andá a "Configuración de cámaras" para agregar una.
+          </p>
+        </section>
+
+        <!-- Sección: Configuración de cámaras -->
+        <section id="seccion-configuracion" hidden class="flex flex-col gap-8">
+          <div>
+            <h2 class="text-xl font-bold">Configuración de cámaras y zonas</h2>
+            <p class="text-sm text-slate-400">
+              Vinculá cámaras de cualquier lugar (necesitás: IP o dominio, puerto RTSP, usuario y contraseña)
+              y asignalas a un área para que el sistema arme los recorridos.
+            </p>
+          </div>
+
+          <!-- Paso 1: crear zonas -->
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <h3 class="mb-1 font-semibold">1. Áreas / Zonas</h3>
+            <p class="mb-4 text-xs text-slate-400">Ej: "Depósito", "Atención al cliente", "Comedor".</p>
+            <form id="form-zona" class="flex flex-wrap gap-2">
+              <input
+                id="input-zona-nombre"
+                type="text"
+                placeholder="Nombre del área"
+                required
+                class="flex-1 min-w-[180px] rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+              />
+              <button type="submit" class="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold hover:bg-slate-600">
+                Crear área
+              </button>
+            </form>
+            <div id="lista-zonas" class="mt-4 flex flex-wrap gap-2"></div>
+          </div>
+
+          <!-- Paso 2: asistente para vincular cámara -->
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <h3 class="mb-1 font-semibold">2. Vincular una cámara nueva</h3>
+            <p class="mb-4 text-xs text-slate-400">
+              Requisitos: la cámara debe estar en una red alcanzable por este servidor y soportar RTSP
+              (la mayoría de las cámaras IP y DVR/NVR lo soportan). Probá la conexión antes de guardar.
+            </p>
+            <form id="form-camara" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label class="flex flex-col gap-1 text-xs text-slate-400">
+                Nombre de la cámara
+                <input id="cam-nombre" type="text" required placeholder="Ej: CamDeposito"
+                  class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+              </label>
+              <label class="flex flex-col gap-1 text-xs text-slate-400">
+                IP o dominio
+                <input id="cam-ip" type="text" required placeholder="Ej: 192.168.0.50"
+                  class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+              </label>
+              <label class="flex flex-col gap-1 text-xs text-slate-400">
+                Puerto RTSP
+                <input id="cam-puerto" type="number" value="554" required
+                  class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+              </label>
+              <label class="flex flex-col gap-1 text-xs text-slate-400">
+                Área
+                <select id="cam-zona"
+                  class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                  <option value="">Sin asignar (no se rastrea todavía)</option>
+                </select>
+              </label>
+              <label class="flex flex-col gap-1 text-xs text-slate-400">
+                Usuario
+                <input id="cam-usuario" type="text" required placeholder="admin"
+                  class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+              </label>
+              <label class="flex flex-col gap-1 text-xs text-slate-400">
+                Contraseña
+                <input id="cam-password" type="password" required
+                  class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+              </label>
+
+              <div class="sm:col-span-2 flex flex-wrap items-center gap-3 pt-2">
+                <button type="button" id="btn-probar-camara" class="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold hover:bg-slate-600">
+                  Probar conexión
+                </button>
+                <button type="submit" id="btn-guardar-camara" disabled
+                  class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40">
+                  Guardar cámara
+                </button>
+                <span id="resultado-prueba-camara" class="text-sm"></span>
+              </div>
+            </form>
+          </div>
+
+          <!-- Paso 3: cámaras existentes -->
+          <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+            <h3 class="mb-4 font-semibold">3. Cámaras vinculadas</h3>
+            <div id="lista-camaras-config" class="flex flex-col gap-3"></div>
+            <p id="camaras-config-vacio" hidden class="text-sm text-slate-500">Todavía no agregaste ninguna cámara.</p>
+          </div>
+        </section>
+
+        <footer class="mt-12 border-t border-slate-800 pt-6 text-center text-xs text-slate-600 lg:hidden">
+          Copyright © 2026 - Designed &amp; Developed by Ing. Luis Africano
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: nuevo / editar empleado -->
+  <div id="modal-form-empleado" hidden class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8">
+    <div class="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-800 bg-slate-900 p-6">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 id="form-empleado-titulo" class="text-lg font-bold">Nuevo empleado</h3>
+        <button data-cerrar-modal="modal-form-empleado" class="rounded-md p-1 hover:bg-slate-800">✕</button>
+      </div>
+      <form id="form-empleado" class="flex flex-col gap-3">
+        <label class="flex flex-col gap-1 text-xs text-slate-400">
+          Nombre
+          <input id="empleado-nombre" type="text" required
+            class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+        </label>
+        <label class="flex flex-col gap-1 text-xs text-slate-400">
+          Apellido
+          <input id="empleado-apellido" type="text"
+            class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+        </label>
+        <label class="flex flex-col gap-1 text-xs text-slate-400">
+          Cargo
+          <input id="empleado-cargo" type="text" placeholder="Ej: Operario de depósito"
+            class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+        </label>
+        <label class="flex flex-col gap-1 text-xs text-slate-400">
+          Legajo (opcional)
+          <input id="empleado-legajo" type="text"
+            class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+        </label>
+
+        <div class="flex flex-col gap-2 rounded-lg border border-slate-800 p-3">
+          <span class="text-xs text-slate-400">
+            Fotos de referencia — cuantas más (distintos ángulos/luz), mejor reconoce.
+          </span>
+
+          <div id="camara-captura-contenedor" hidden class="flex flex-col gap-2">
+            <video id="camara-captura-video" autoplay playsinline muted class="w-full rounded-lg bg-black"></video>
+            <div class="flex gap-2">
+              <button type="button" id="btn-capturar-foto" class="flex-1 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold hover:bg-emerald-500">
+                Capturar
+              </button>
+              <button type="button" id="btn-cerrar-camara" class="rounded-lg bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">
+                Cerrar cámara
+              </button>
+            </div>
+            <p id="error-camara-captura" class="hidden text-xs text-red-400"></p>
+          </div>
+
+          <div class="flex gap-2">
+            <button type="button" id="btn-tomar-foto" class="flex-1 rounded-lg bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">
+              📷 Tomar foto
+            </button>
+            <button type="button" id="btn-cargar-foto" class="flex-1 rounded-lg bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">
+              📁 Cargar foto
+            </button>
+            <input id="input-cargar-foto" type="file" accept="image/*" multiple hidden />
+          </div>
+
+          <div id="miniaturas-fotos" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <p id="error-form-empleado" class="hidden text-sm text-red-400"></p>
+        <button type="submit" id="btn-guardar-empleado" class="mt-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold hover:bg-indigo-500">
+          Crear perfil
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <canvas id="canvas-captura" class="hidden"></canvas>
+
+  <!-- Modal: detalle empleado -->
+  <div id="modal-detalle-empleado" hidden class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+    <div class="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-800 bg-slate-900 p-6">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 id="detalle-empleado-nombre" class="text-lg font-bold">-</h3>
+        <button data-cerrar-modal="modal-detalle-empleado" class="rounded-md p-1 hover:bg-slate-800">✕</button>
+      </div>
+      <div id="detalle-empleado-contenido" class="flex flex-col gap-4 text-sm"></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

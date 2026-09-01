@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CamRecon - Ingresar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4 text-white">
+  <main class="w-full max-w-sm">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold tracking-tight">CamRecon</h1>
+      <p class="mt-1 text-sm text-slate-400">Reconocimiento facial y tracking por zonas</p>
+    </div>
+
+    <form id="form-login" class="flex flex-col gap-4 rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+      <h2 class="text-center text-sm font-semibold text-slate-300">Iniciar sesión</h2>
+
+      <label class="flex flex-col gap-1 text-xs text-slate-400">
+        Usuario
+        <input id="login-usuario" type="text" required autocomplete="username"
+          class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+      </label>
+
+      <label class="flex flex-col gap-1 text-xs text-slate-400">
+        Contraseña
+        <input id="login-password" type="password" required autocomplete="current-password"
+          class="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none" />
+      </label>
+
+      <p id="error-login" hidden class="text-sm text-red-400"></p>
+
+      <button type="submit" id="btn-login"
+        class="mt-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50">
+        Ingresar
+      </button>
+    </form>
+
+    <footer class="mt-8 text-center text-xs text-slate-600">
+      Copyright © 2026 - Designed &amp; Developed by Ing. Luis Africano
+    </footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

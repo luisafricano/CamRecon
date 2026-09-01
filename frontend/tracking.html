@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CamRecon - Tracking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex min-h-screen flex-col bg-slate-950 text-white">
+  <main class="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-10">
+    <header class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold">CamRecon <span class="font-normal text-slate-500">· Recorrido por cámaras</span></h1>
+        <p class="mt-1 text-sm text-slate-400">Sesiones por zona, se actualiza solo cada 5s.</p>
+      </div>
+      <span id="estado-tracking" class="rounded-full px-3 py-1 text-xs font-bold"></span>
+    </header>
+
+    <section class="flex flex-col gap-2">
+      <h2 class="text-lg font-semibold">Últimas sesiones (todas las personas)</h2>
+      <div class="overflow-hidden rounded-xl border border-slate-800">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-900 text-slate-400">
+            <tr>
+              <th class="px-4 py-2">Persona</th>
+              <th class="px-4 py-2">Zona</th>
+              <th class="px-4 py-2">Entrada</th>
+              <th class="px-4 py-2">Salida</th>
+              <th class="px-4 py-2">Duración</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-sesiones" class="divide-y divide-slate-800"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-2">
+      <h2 class="text-lg font-semibold">Log crudo</h2>
+      <pre id="log-crudo" class="max-h-96 overflow-y-auto rounded-xl border border-slate-800 bg-black p-4 text-xs text-slate-300"></pre>
+    </section>
+  </main>
+
+  <footer class="py-6 text-center text-xs text-slate-600">
+    Copyright © 2026 - Designed &amp; Developed by Ing. Luis Africano
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="tracking.js"></script>
+</body>
+</html>

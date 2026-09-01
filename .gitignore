@@ -1,0 +1,31 @@
+# --- Información sensible: NUNCA subir esto al repositorio ------------------
+
+# Credenciales (usuarios/contraseñas de cámaras, login inicial, etc.)
+backend/.env
+.env
+*.env
+!.env.example
+!backend/.env.example
+
+# Base de datos: contiene contraseñas hasheadas, empleados y su recorrido
+backend/tracking.db
+*.db
+
+# Fotos de referencia de personas reales (datos biométricos)
+backend/conocidos/*
+!backend/conocidos/README.md
+
+# Logs con datos de recorrido de personas
+backend/tracking_recorrido.log
+*.log
+
+# --- Entorno / dependencias --------------------------------------------------
+
+backend/venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# --- Archivos temporales de despliegue ---------------------------------------
+
+*.pid

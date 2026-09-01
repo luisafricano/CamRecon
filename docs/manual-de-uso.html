@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manual de uso — Reconocimiento Facial</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --bg-card: #131a2a;
+    --bg-code: #0d1420;
+    --border: #253044;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #818cf8;
+    --accent-2: #34d399;
+    --accent-3: #fbbf24;
+    --danger: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html {
+    background: var(--bg);
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+    font-size: 15px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+  header.portada {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+  header.portada .kicker {
+    color: var(--accent-2);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  header.portada h1 {
+    font-size: 32px;
+    margin: 8px 0 8px;
+    color: #fff;
+  }
+  header.portada p.subtitulo {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin: 0;
+  }
+  header.portada .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  nav.indice {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+  nav.indice h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+  }
+  nav.indice ol { margin: 0; padding-left: 20px; }
+  nav.indice li { margin-bottom: 6px; }
+  nav.indice a { color: var(--accent); text-decoration: none; }
+  nav.indice a:hover { text-decoration: underline; }
+
+  h2 {
+    font-size: 22px;
+    color: #fff;
+    margin-top: 48px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  h2 .num { color: var(--accent); margin-right: 8px; }
+  h3 { font-size: 17px; color: #fff; margin-top: 28px; }
+  h4 { font-size: 14.5px; color: var(--accent-2); margin-top: 20px; text-transform: uppercase; letter-spacing: 0.04em; }
+  p { color: var(--text); }
+  a { color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13.5px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--bg-card);
+    color: var(--accent-2);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  code {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+    font-size: 0.9em;
+    color: var(--accent-3);
+  }
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #cbd5e1;
+  }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(129,140,248,0.08);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 18px 0;
+    font-size: 14px;
+  }
+  .callout.nota::before {
+    content: "Nota";
+    display: block;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .callout.tip { border-left-color: var(--accent-2); background: rgba(52,211,153,0.08); }
+  .callout.tip::before {
+    content: "Tip";
+    display: block;
+    font-weight: 700;
+    color: var(--accent-2);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 4px; }
+
+  .badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge.editar { background: rgba(129,140,248,0.15); color: var(--accent); }
+  .badge.toggle { background: rgba(251,191,36,0.15); color: var(--accent-3); }
+  .badge.eliminar { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  @media print {
+    html, body {
+      background: var(--bg) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page { padding: 40px 44px 64px; max-width: none; }
+    h2 { break-after: avoid; }
+    table, pre, .callout { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="portada">
+    <div class="kicker">Documentación de usuario</div>
+    <h1>Manual de uso</h1>
+    <p class="subtitulo">Guía práctica para poner en marcha el sistema y usar el panel de administración</p>
+    <div class="meta">
+      <span>Proyecto: reconocimiento-facial</span>
+      <span>Documento 2 de 2</span>
+    </div>
+  </header>
+
+  <nav class="indice">
+    <h2>Índice</h2>
+    <ol>
+      <li><a href="#s1">Puesta en marcha (entorno local)</a></li>
+      <li><a href="#s2">El panel (panel.html)</a></li>
+      <li><a href="#s3">Formato de tiempos</a></li>
+      <li><a href="#s4">Otras páginas incluidas</a></li>
+      <li><a href="#s5">Problemas comunes</a></li>
+    </ol>
+  </nav>
+
+  <p>
+    Esta guía es práctica: cómo levantar el sistema y usar cada sección del panel. Para
+    entender cómo funciona por dentro, ver el documento <em>Funcionamiento del sistema</em>.
+  </p>
+
+  <h2 id="s1"><span class="num">1.</span>Puesta en marcha (entorno local)</h2>
+
+  <h3>Backend</h3>
+  <pre><code>cd reconocimiento-facial/backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt</code></pre>
+  <p>
+    Crear un archivo <code>.env</code> (si no existe) con las credenciales por defecto de
+    las cámaras y el intervalo de muestreo:
+  </p>
+  <pre><code>CAMERA_USER=admin
+CAMERA_PASSWORD=tu_contraseña
+TRACKING_INTERVALO_SEGUNDOS=3</code></pre>
+  <p>Levantar el servidor:</p>
+  <pre><code>uvicorn main:app --host 0.0.0.0 --port 8001</code></pre>
+
+  <h3>Frontend</h3>
+  <pre><code>cd reconocimiento-facial/frontend
+python3 -m http.server 5500</code></pre>
+  <p>Abrir <code>http://localhost:5500/panel.html</code> en el navegador.</p>
+
+  <div class="callout nota">
+    Si accedés desde otro dispositivo (celular, otra PC), cambiá <code>API_URL</code> en
+    <code>frontend/config.js</code> por la IP de red (o el dominio) del backend. Para usar
+    la cámara del celular hace falta que el frontend se sirva por <strong>HTTPS</strong>
+    (los navegadores bloquean el acceso a cámara en HTTP salvo en <code>localhost</code>).
+  </div>
+
+  <h2 id="s2"><span class="num">2.</span>El panel (<code>panel.html</code>)</h2>
+  <p>
+    Tiene tres secciones, accesibles desde el menú lateral (o el menú ☰ en mobile):
+  </p>
+
+  <h3>Empleados</h3>
+  <ul>
+    <li>
+      <strong>"+ Nuevo empleado"</strong>: abre el formulario con nombre, apellido, cargo
+      y legajo (opcional), y la sección de fotos:
+      <ul>
+        <li><strong>📷 Tomar foto</strong>: pide permiso de cámara (del dispositivo desde el que estés usando el panel — notebook o celular) y permite capturar una o varias fotos.</li>
+        <li><strong>📁 Cargar foto</strong>: permite elegir una o varias fotos ya guardadas.</li>
+        <li>Se puede combinar: tomar algunas y cargar otras. Cuantas más fotos (distintos ángulos, luz), mejor va a reconocer a esa persona.</li>
+        <li>Hace falta al menos una foto para crear el perfil.</li>
+      </ul>
+    </li>
+    <li><strong>Buscador</strong>: filtra la tabla en vivo por nombre, apellido, cargo o legajo.</li>
+    <li>
+      Click en una fila abre el <strong>detalle</strong> del empleado: foto, datos, tiempo
+      total detectado por el sistema, y dos acciones sobre los logs:
+      <ul>
+        <li><strong>"Ver logs"</strong>: despliega la tabla completa de su recorrido (zona, entrada, salida, duración de cada tramo).</li>
+        <li><strong>"Descargar logs"</strong>: descarga un archivo de texto prolijo con el mismo recorrido, los tiempos por zona y el tiempo total — pensado para compartir o archivar.</li>
+      </ul>
+    </li>
+    <li>Desde el detalle también se pueden agregar más fotos de referencia en cualquier momento (mismo mecanismo de tomar/cargar).</li>
+  </ul>
+
+  <h4>Botones por fila</h4>
+  <table>
+    <thead><tr><th>Acción</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge editar">Editar</span></td><td>Modifica nombre/apellido/cargo/legajo y permite sumar fotos.</td></tr>
+      <tr><td><span class="badge toggle">Activar / Desactivar</span></td><td>Desactivar saca a la persona del reconocimiento (deja de generar detecciones nuevas) sin borrar su historial ni sus datos — útil para bajas temporales o definitivas sin perder el registro. Se puede reactivar en cualquier momento.</td></tr>
+      <tr><td><span class="badge eliminar">Eliminar</span></td><td>Borra el perfil y sus fotos definitivamente. No se puede deshacer.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cámaras en vivo</h3>
+  <p>
+    Una tarjeta por cámara configurada, con botón <strong>"Ver en vivo"</strong>
+    individual.
+  </p>
+  <div class="callout tip">
+    No conviene activar muchas cámaras a la vez si son de gama económica, ya que suelen
+    soportar pocas conexiones simultáneas — si una no carga, probá desactivando otra
+    primero.
+  </div>
+
+  <h3>Configuración de cámaras</h3>
+  <p>Wizard de tres pasos:</p>
+  <ol>
+    <li><strong>Áreas / Zonas</strong>: crear las zonas físicas que se quieren monitorear (ej. "Depósito", "Atención al cliente", "Comedor"). Se pueden crear todas las que hagan falta y eliminarlas cuando ya no se usen (las cámaras que tenían esa zona quedan "Sin asignar", no se borran).</li>
+    <li><strong>Vincular una cámara nueva</strong>: cargar nombre, IP/dominio, puerto RTSP (por defecto <code>554</code>), usuario, contraseña y (opcionalmente) la zona. Antes de poder guardar hay que tocar <strong>"Probar conexión"</strong> — si falla, revisar IP/puerto/usuario/contraseña y que la cámara esté en una red alcanzable desde el servidor.</li>
+    <li><strong>Cámaras vinculadas</strong>: lista de todas las cámaras cargadas, con un selector para cambiar su zona en cualquier momento (sin reiniciar nada) y un botón para eliminarlas.</li>
+  </ol>
+  <div class="callout nota">
+    Una cámara <strong>sin zona asignada</strong> no participa del tracking (no genera
+    sesiones ni recorridos), aunque sí se puede ver en vivo.
+  </div>
+
+  <h2 id="s3"><span class="num">3.</span>Formato de tiempos</h2>
+  <p>
+    Todas las duraciones en el sistema (pantalla, logs, reportes descargables) se
+    muestran siempre en formato <code>HH:MM:SS</code> (por ejemplo <code>00:12:05</code> =
+    12 minutos y 5 segundos). No se usan minutos con decimales en ningún lado.
+  </p>
+
+  <h2 id="s4"><span class="num">4.</span>Otras páginas incluidas</h2>
+  <ul>
+    <li><code>index.html</code>: demo simple de captura por webcam contra el endpoint <code>/reconocer/</code> (útil para probar el reconocimiento de forma aislada, sin tracking).</li>
+    <li><code>tracking.html</code>: vista minimalista de solo lectura del recorrido en tiempo real (se actualiza sola cada 5 segundos) y el log crudo en texto — alternativa liviana al panel completo.</li>
+  </ul>
+
+  <h2 id="s5"><span class="num">5.</span>Problemas comunes</h2>
+  <table>
+    <thead><tr><th>Síntoma</th><th>Causa probable / solución</th></tr></thead>
+    <tbody>
+      <tr><td>El navegador no deja usar la cámara</td><td>Necesita HTTPS (salvo en <code>localhost</code>). Ver sección de despliegue con túnel/certificado en el proyecto.</td></tr>
+      <tr><td>Siempre da "Desconocido" aunque la persona esté cargada</td><td>Agregar más fotos de referencia, en especial en las mismas condiciones de luz/cámara donde se lo quiere reconocer (ej. una foto nocturna IR si la cámara filma de noche).</td></tr>
+      <tr><td>Una cámara nunca aparece con detecciones</td><td>Revisar que tenga una <strong>zona asignada</strong> en Configuración → Cámaras vinculadas, y que "Probar conexión" dé éxito.</td></tr>
+      <tr><td>El botón "Ver en vivo" no carga imagen</td><td>La cámara puede estar rechazando otra conexión RTSP simultánea (además de la del tracking). Desactivar otras vistas en vivo y reintentar.</td></tr>
+      <tr><td>Faltan tramos de recorrido o quedan "en curso" para siempre</td><td>El sistema solo cierra un tramo cuando detecta a la persona en <strong>otra</strong> cámara. Si sale de todas las cámaras sin pasar por otra, ese último tramo queda abierto hasta la próxima detección.</td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <span>Reconocimiento Facial — Documentación de usuario</span>
+    <span>Documento 2 de 2 · Manual de uso</span>
+  </footer>
+
+</div>
+</body>
+</html>

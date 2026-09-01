@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Funcionamiento del sistema — Reconocimiento Facial</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --bg-card: #131a2a;
+    --bg-code: #0d1420;
+    --border: #253044;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #818cf8;
+    --accent-2: #34d399;
+    --accent-3: #fbbf24;
+    --danger: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html {
+    background: var(--bg);
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+    font-size: 15px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+  header.portada {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+  header.portada .kicker {
+    color: var(--accent-2);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  header.portada h1 {
+    font-size: 32px;
+    margin: 8px 0 8px;
+    color: #fff;
+  }
+  header.portada p.subtitulo {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin: 0;
+  }
+  header.portada .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  nav.indice {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+  nav.indice h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+  }
+  nav.indice ol { margin: 0; padding-left: 20px; }
+  nav.indice li { margin-bottom: 6px; }
+  nav.indice a { color: var(--accent); text-decoration: none; }
+  nav.indice a:hover { text-decoration: underline; }
+
+  h2 {
+    font-size: 22px;
+    color: #fff;
+    margin-top: 48px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  h2 .num { color: var(--accent); margin-right: 8px; }
+  h3 { font-size: 17px; color: #fff; margin-top: 28px; }
+  p { color: var(--text); }
+  a { color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13.5px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--bg-card);
+    color: var(--accent-2);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  code {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+    font-size: 0.9em;
+    color: var(--accent-3);
+  }
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #cbd5e1;
+  }
+  .diagrama {
+    color: var(--accent-2);
+  }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(129,140,248,0.08);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 18px 0;
+    font-size: 14px;
+  }
+  .callout.nota::before {
+    content: "Nota";
+    display: block;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 4px; }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  @media print {
+    html, body {
+      background: var(--bg) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page { padding: 40px 44px 64px; max-width: none; }
+    h2 { break-after: avoid; }
+    table, pre, .callout { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="portada">
+    <div class="kicker">Documentación técnica</div>
+    <h1>Funcionamiento del sistema</h1>
+    <p class="subtitulo">Arquitectura y flujo completo — Sistema de Reconocimiento Facial y Tracking por Zonas</p>
+    <div class="meta">
+      <span>Proyecto: reconocimiento-facial</span>
+      <span>Documento 1 de 2</span>
+    </div>
+  </header>
+
+  <nav class="indice">
+    <h2>Índice</h2>
+    <ol>
+      <li><a href="#s1">Componentes principales</a></li>
+      <li><a href="#s2">Piezas del backend</a></li>
+      <li><a href="#s3">Flujo completo: de la cámara al reporte</a></li>
+      <li><a href="#s4">Modelo de datos</a></li>
+      <li><a href="#s5">Reconocimiento facial: cómo decide quién es quién</a></li>
+      <li><a href="#s6">Empleados activos e inactivos</a></li>
+      <li><a href="#s7">Cámaras en vivo vs. tracking</a></li>
+      <li><a href="#s8">Despliegue</a></li>
+    </ol>
+  </nav>
+
+  <p>
+    Este documento explica la arquitectura y el flujo completo del software, de punta a
+    punta: desde que una cámara capta un rostro hasta que queda disponible el reporte de
+    recorrido de un empleado.
+  </p>
+
+  <h2 id="s1"><span class="num">1.</span>Componentes principales</h2>
+  <pre class="diagrama">reconocimiento-facial/
+├── backend/     API en Python (FastAPI) + reconocimiento facial + tracking
+└── frontend/    Interfaz web estática (HTML/CSS/JS, sin frameworks)</pre>
+  <p>
+    El <strong>backend</strong> es el único componente con lógica real: recibe imágenes,
+    las procesa, guarda resultados en una base de datos SQLite y expone todo por una API
+    REST. El <strong>frontend</strong> es solo una interfaz que consume esa API — no hace
+    ningún procesamiento de imágenes por su cuenta.
+  </p>
+
+  <h2 id="s2"><span class="num">2.</span>Piezas del backend</h2>
+  <table>
+    <thead><tr><th>Archivo / carpeta</th><th>Responsabilidad</th></tr></thead>
+    <tbody>
+      <tr><td><code>main.py</code></td><td>Define todos los endpoints de la API (FastAPI)</td></tr>
+      <tr><td><code>recognition.py</code></td><td>Carga las fotos de <code>conocidos/</code>, genera sus codificaciones faciales y compara rostros nuevos contra ellas</td></tr>
+      <tr><td><code>empleados.py</code></td><td>Alta/edición/baja de empleados, y gestión de sus fotos de referencia</td></tr>
+      <tr><td><code>camaras.py</code></td><td>Alta/baja de cámaras, prueba de conexión, generación del stream en vivo (MJPEG)</td></tr>
+      <tr><td><code>formato.py</code></td><td>Formato consistente de fechas y duraciones (siempre <code>HH:MM:SS</code>, nunca minutos decimales)</td></tr>
+      <tr><td><code>reportes.py</code></td><td>Genera el archivo de texto descargable con el recorrido de un empleado</td></tr>
+      <tr><td><code>tracking/capture.py</code></td><td>Arma la URL RTSP y captura un frame de una cámara</td></tr>
+      <tr><td><code>tracking/db.py</code></td><td>Todo el acceso a la base de datos SQLite (<code>tracking.db</code>)</td></tr>
+      <tr><td><code>tracking/service.py</code></td><td>El loop en background que muestrea las cámaras periódicamente</td></tr>
+      <tr><td><code>tracking/session_tracker.py</code></td><td>Decide cuándo abrir/cerrar una "sesión" de permanencia en una zona</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="s3"><span class="num">3.</span>Flujo completo: de la cámara al reporte</h2>
+  <pre class="diagrama"> Cámara IP (RTSP)
+       │
+       ▼
+tracking/capture.py    ── captura 1 frame JPEG
+       │
+       ▼
+recognition.py          ── detecta rostros y los compara contra conocidos/
+       │
+       ▼
+tracking/service.py     ── por cada rostro reconocido (no "Desconocido"):
+       │                     1) guarda la detección cruda (tabla `detecciones`)
+       │                     2) llama a session_tracker
+       ▼
+tracking/session_tracker.py
+       │   ¿la persona ya tenía una sesión abierta en OTRA zona?
+       │     sí  → la cierra (calcula duración en segundos) y abre una nueva
+       │     no  → abre una sesión nueva en la zona actual
+       ▼
+tracking/db.py           ── persiste todo en tracking.db (tabla `sesiones`)
+       │
+       ▼
+main.py (API REST)       ── expone /tracking/recorrido/{persona}, /empleados/{id}, etc.
+       │
+       ▼
+frontend (panel.html)    ── consulta la API y lo muestra en pantalla / lo deja descargar</pre>
+
+  <h3>Ciclo de muestreo (<code>tracking/service.py</code>)</h3>
+  <p>
+    El servicio de tracking corre en un hilo en background, separado del resto de la API.
+    Cada <code>TRACKING_INTERVALO_SEGUNDOS</code> (configurable en <code>.env</code>, por
+    defecto 3 segundos):
+  </p>
+  <ol>
+    <li>Pide a la base de datos la lista de cámaras que <strong>ya tienen una zona asignada</strong> (las que no tienen zona quedan excluidas del tracking a propósito).</li>
+    <li>Procesa todas las cámaras <strong>en paralelo</strong> (un hilo por cámara) para no acumular demora — si se hiciera secuencial, el tiempo real entre muestras crecería con la cantidad de cámaras.</li>
+    <li>Por cada cámara: conecta por RTSP, toma un frame, corre el reconocimiento, y si hay una coincidencia (no "Desconocido"), registra la detección y actualiza la sesión.</li>
+  </ol>
+
+  <h3>Lógica de sesiones (permanencia por zona)</h3>
+  <p>
+    Una "sesión" representa un tramo continuo de tiempo que una persona pasó en una zona.
+    El criterio es simple:
+  </p>
+  <ul>
+    <li>Si la persona <strong>no tenía sesión abierta</strong>, se abre una nueva en la zona donde apareció.</li>
+    <li>Si la persona <strong>ya tenía una sesión abierta en la misma zona</strong>, no pasa nada (sigue ahí).</li>
+    <li>Si la persona <strong>tenía una sesión abierta en OTRA zona</strong>, esa sesión se cierra (con <code>salida</code> = ahora, y <code>duración</code> = ahora − entrada) y se abre una sesión nueva en la zona nueva.</li>
+  </ul>
+  <div class="callout nota">
+    Esto es lo que permite reconstruir un recorrido tipo: <em>"Depósito 14:02–14:20
+    (00:18:00), Atención al cliente 14:22–14:35..."</em> sin tener que hacer cálculos al
+    momento de consultar — la duración queda calculada y guardada en el mismo instante
+    en que se detecta el cambio de zona.
+  </div>
+
+  <h2 id="s4"><span class="num">4.</span>Modelo de datos (SQLite, <code>backend/tracking.db</code>)</h2>
+  <table>
+    <thead><tr><th>Tabla</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><code>empleados</code></td><td>Perfiles: nombre, apellido, cargo, legajo, estado (activo/inactivo)</td></tr>
+      <tr><td><code>zonas</code></td><td>Áreas físicas (ej. "Depósito") creadas desde el panel</td></tr>
+      <tr><td><code>camaras</code></td><td>IP, puerto, usuario, contraseña y zona asignada de cada cámara</td></tr>
+      <tr><td><code>detecciones</code></td><td>Cada vez que una cámara reconoce a alguien (log crudo, sin agrupar)</td></tr>
+      <tr><td><code>sesiones</code></td><td>Los tramos de permanencia ya agrupados por zona (entrada, salida, duración)</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="s5"><span class="num">5.</span>Reconocimiento facial: cómo decide quién es quién</h2>
+  <p><code>recognition.py</code> usa la librería <code>face_recognition</code> (basada en <code>dlib</code>):</p>
+  <ol>
+    <li>Al iniciar (o al llamar <code>/recargar-conocidos/</code>), recorre <code>backend/conocidos/</code> y genera una "codificación" (un vector numérico) por cada foto de referencia.</li>
+    <li>Cuando llega una imagen nueva, detecta los rostros presentes y genera su codificación.</li>
+    <li>Compara esa codificación contra <strong>todas</strong> las codificaciones conocidas y se queda con la de menor distancia.</li>
+    <li>Si esa distancia es menor o igual a <code>TOLERANCIA</code> (en <code>recognition.py</code>), se considera una coincidencia; si no, se marca como "Desconocido".</li>
+  </ol>
+  <p>
+    Cuantas más fotos de referencia tenga una persona (distintos ángulos, luz, con/sin
+    barba, de día/de noche), más robusto es el reconocimiento — por eso el panel permite
+    cargar varias fotos por empleado, incluyendo capturas tomadas directamente con cámara.
+  </p>
+  <div class="callout nota">
+    La visión nocturna infrarroja (blanco y negro, granulada) da distancias más altas que
+    una foto diurna a color, incluso comparando a la misma persona. Por eso conviene
+    agregar al menos una foto de referencia tomada en las mismas condiciones (de noche,
+    con la misma cámara) para cada persona que se quiera reconocer en ese horario.
+  </div>
+
+  <h2 id="s6"><span class="num">6.</span>Empleados activos e inactivos</h2>
+  <p>
+    Desactivar un empleado <strong>no borra sus datos ni su historial</strong>: mueve sus
+    fotos de referencia de <code>conocidos/</code> a <code>conocidos/_inactivos/</code> y
+    recarga el reconocedor. Esto hace que el sistema deje de reconocerlo (no se generan
+    nuevas detecciones/sesiones a su nombre) sin perder el legajo, cargo ni el recorrido ya
+    registrado. Reactivarlo devuelve las fotos a <code>conocidos/</code> y vuelve a
+    incluirlo en el reconocimiento.
+  </p>
+
+  <h2 id="s7"><span class="num">7.</span>Cámaras en vivo vs. tracking</h2>
+  <p>Son dos conexiones RTSP independientes a la misma cámara:</p>
+  <ul>
+    <li><strong>Tracking</strong> (<code>tracking/service.py</code>): usa el stream principal (canal 1, calidad completa), conecta, toma un frame, y se desconecta — cada <code>TRACKING_INTERVALO_SEGUNDOS</code>.</li>
+    <li><strong>Vista en vivo</strong> (<code>camaras.py</code>, endpoint <code>/camaras/{id}/stream</code>): usa el sub-stream (más liviano) y mantiene la conexión abierta mientras el usuario tenga esa cámara abierta en el panel, entregando frames como MJPEG.</li>
+  </ul>
+  <p>
+    Cámaras económicas suelen soportar pocas conexiones RTSP simultáneas — por eso la
+    vista en vivo se activa cámara por cámara (no todas a la vez por defecto) y no
+    comparte conexión con el tracking.
+  </p>
+
+  <h2 id="s8"><span class="num">8.</span>Despliegue</h2>
+  <p>
+    El backend está pensado para correr en un VPS vía Docker (<code>Dockerfile</code> +
+    <code>docker-compose.yml</code> en <code>backend/</code>). El frontend son archivos
+    estáticos que se pueden servir desde cualquier servidor HTTP (o el mismo VPS). Ver
+    <em>Manual de uso</em> para los pasos concretos.
+  </p>
+
+  <footer>
+    <span>Reconocimiento Facial — Documentación técnica</span>
+    <span>Documento 1 de 2 · Funcionamiento del sistema</span>
+  </footer>
+
+</div>
+</body>
+</html>

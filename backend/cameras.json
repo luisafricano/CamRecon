@@ -1,0 +1,20 @@
+[
+  {
+    "id": "cam_patio",
+    "nombre": "CamPatio",
+    "zona": "Entrada / Calle",
+    "ip": "192.168.0.112"
+  },
+  {
+    "id": "cam_golza",
+    "nombre": "CamGolza",
+    "zona": "Patio trasero",
+    "ip": "192.168.0.218"
+  },
+  {
+    "id": "cam_frente",
+    "nombre": "CamFrente",
+    "zona": "Frente",
+    "ip": "192.168.0.97"
+  }
+]

@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Escalabilidad y rendimiento — Reconocimiento Facial</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --bg-card: #131a2a;
+    --bg-code: #0d1420;
+    --border: #253044;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #818cf8;
+    --accent-2: #34d399;
+    --accent-3: #fbbf24;
+    --danger: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+    font-size: 15px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+  header.portada {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+  header.portada .kicker {
+    color: var(--accent-2);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  header.portada h1 {
+    font-size: 32px;
+    margin: 8px 0 8px;
+    color: #fff;
+  }
+  header.portada p.subtitulo {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin: 0;
+  }
+  header.portada .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  nav.indice {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+  nav.indice h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+  }
+  nav.indice ol { margin: 0; padding-left: 20px; }
+  nav.indice li { margin-bottom: 6px; }
+  nav.indice a { color: var(--accent); text-decoration: none; }
+  nav.indice a:hover { text-decoration: underline; }
+
+  h2 {
+    font-size: 22px;
+    color: #fff;
+    margin-top: 48px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  h2 .num { color: var(--accent); margin-right: 8px; }
+  h3 { font-size: 16.5px; color: var(--accent-2); margin-top: 28px; text-transform: uppercase; letter-spacing: 0.03em; }
+  p { color: var(--text); }
+  a { color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13.5px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--bg-card);
+    color: var(--accent-2);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  code {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+    font-size: 0.9em;
+    color: var(--accent-3);
+  }
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #cbd5e1;
+  }
+  .diagrama { color: var(--accent-2); }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(129,140,248,0.08);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 18px 0;
+    font-size: 14px;
+  }
+  .callout.nota::before {
+    content: "Nota";
+    display: block;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .callout.warn { border-left-color: var(--accent-3); background: rgba(251,191,36,0.08); }
+  .callout.warn::before {
+    content: "Importante";
+    display: block;
+    font-weight: 700;
+    color: var(--accent-3);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .card h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    color: #fff;
+  }
+
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 4px; }
+
+  .badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge.paso1 { background: rgba(52,211,153,0.15); color: var(--accent-2); }
+  .badge.paso4 { background: rgba(129,140,248,0.15); color: var(--accent); }
+  .badge.paso3 { background: rgba(251,191,36,0.15); color: var(--accent-3); }
+  .badge.paso2 { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @page { size: A4; margin: 0; }
+  @media print {
+    html, body {
+      background: var(--bg) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page { padding: 40px 44px 64px; max-width: none; }
+    h2 { break-after: avoid; }
+    table, pre, .callout, .card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="portada">
+    <div class="kicker">Documentación técnica</div>
+    <h1>Escalabilidad y rendimiento</h1>
+    <p class="subtitulo">Guía de referencia: qué hace falta para procesar más rápido, sin importar la escala</p>
+    <div class="meta">
+      <span>Proyecto: CamRecon</span>
+      <span>Documento de referencia (no implementado)</span>
+    </div>
+  </header>
+
+  <nav class="indice">
+    <h2>Índice</h2>
+    <ol>
+      <li><a href="#diagnostico">Diagnóstico: por qué hoy es rápido y cuándo dejaría de serlo</a></li>
+      <li><a href="#s1">Índice de vectores para la búsqueda de "quién es"</a></li>
+      <li><a href="#s2">GPU y modelos de reconocimiento más modernos</a></li>
+      <li><a href="#s3">Arquitectura de colas para muchas cámaras en simultáneo</a></li>
+      <li><a href="#s4">Base de datos: de SQLite a PostgreSQL</a></li>
+      <li><a href="#resumen">Resumen y orden sugerido</a></li>
+    </ol>
+  </nav>
+
+  <p>
+    Este documento es una <strong>guía de referencia</strong>, no un cambio ya
+    implementado. Describe los cuellos de botella reales del sistema tal como está hoy,
+    y qué haría falta en cada caso para que el reconocimiento sea rápido (o casi
+    instantáneo) sin importar cuántas cámaras, empleados o rostros por imagen haya.
+  </p>
+  <p>
+    No hay un único cambio que resuelva todo de una vez — es una escalera: cada nivel
+    cuesta más (en infraestructura, tiempo de desarrollo y, en algunos casos, dinero)
+    pero también rinde más. Para el estado actual del proyecto (pocas cámaras, pocos
+    empleados) <strong>no hace falta nada de esto todavía</strong>. Sirve como hoja de
+    ruta para cuando el sistema crezca de verdad.
+  </p>
+
+  <h2 id="diagnostico">Diagnóstico: por qué hoy es rápido y cuándo dejaría de serlo</h2>
+  <p>
+    Con la arquitectura actual (<code>face_recognition</code>/<code>dlib</code> en CPU,
+    comparación lineal contra los conocidos, SQLite, un hilo por cámara), el sistema es
+    rápido porque:
+  </p>
+  <ul>
+    <li>Hay pocas cámaras (paralelizadas con hilos, ver <code>tracking/service.py</code>).</li>
+    <li>Hay pocos empleados cargados (la comparación es lineal: cada rostro detectado se compara contra <strong>todos</strong> los conocidos, uno por uno).</li>
+    <li>El muestreo es cada pocos segundos, no frame por frame.</li>
+  </ul>
+  <p>
+    Esto deja de ser instantáneo cuando crece cualquiera de estas tres variables:
+    cantidad de empleados conocidos, cantidad de cámaras simultáneas, o exigencia de
+    latencia (tiempo real estricto en vez de muestreo cada N segundos).
+  </p>
+
+  <h2 id="s1"><span class="badge paso1">Punto 1</span></h2>
+  <h2 style="border-top:none;margin-top:8px;padding-top:0;">Índice de vectores para la búsqueda de "quién es"</h2>
+
+  <h3>El problema</h3>
+  <p>Hoy, en <code>recognition.py</code>, <code>reconocer()</code> hace esto por cada rostro detectado:</p>
+  <pre><code>distancias = face_recognition.face_distance(self.encodings_conocidos, encoding)
+mejor_indice = int(np.argmin(distancias))</code></pre>
+  <p>
+    Es una <strong>búsqueda lineal</strong>: compara contra los N empleados conocidos,
+    uno por uno. Con 10 empleados no se nota. Con 5.000, cada rostro detectado tarda
+    ~500 veces más que hoy — el tiempo crece proporcional a la cantidad de gente
+    cargada en el sistema.
+  </p>
+
+  <h3>La solución</h3>
+  <p>
+    Reemplazar la búsqueda lineal por un <strong>índice de vectores</strong> (vector
+    search), que encuentra "el más parecido" en tiempo casi constante en vez de
+    recorrer todo. Esto hace que el reconocimiento sea rápido <strong>sin importar
+    cuántos empleados tengas cargados</strong>.
+  </p>
+
+  <h3>Opciones concretas</h3>
+  <table>
+    <thead><tr><th>Opción</th><th>Cuándo conviene</th></tr></thead>
+    <tbody>
+      <tr><td><strong>FAISS</strong> (librería de Meta, corre embebida en el proceso Python)</td><td>Más simple de integrar, no requiere un servidor aparte. Ideal como primer paso.</td></tr>
+      <tr><td><strong>pgvector</strong> (extensión de PostgreSQL)</td><td>Si de todas formas se migra a PostgreSQL (punto 4), resuelve este problema y el de la base de datos a la vez.</td></tr>
+      <tr><td><strong>Qdrant / Milvus</strong> (bases de datos de vectores dedicadas)</td><td>Cuando se necesita buscar entre millones de rostros, con filtros adicionales, o servir la búsqueda desde varios servicios.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Instrucciones (con FAISS, la opción más simple)</h3>
+  <ol>
+    <li><code>pip install faiss-cpu</code> (o <code>faiss-gpu</code> si ya se tiene GPU, ver punto 2).</li>
+    <li>
+      En <code>recognition.py</code>, al cargar <code>conocidos/</code>, en vez de guardar
+      <code>encodings_conocidos</code> como una lista simple, construir un índice:
+      <pre><code>import faiss
+indice = faiss.IndexFlatL2(128)  # 128 = dimensión del encoding de face_recognition
+indice.add(np.array(encodings_conocidos, dtype="float32"))</code></pre>
+    </li>
+    <li>
+      En <code>reconocer()</code>, reemplazar el cálculo de <code>face_distance</code> por:
+      <pre><code>distancias, indices = indice.search(np.array([encoding], dtype="float32"), k=1)</code></pre>
+    </li>
+    <li>
+      Reconstruir el índice cada vez que se agrega/elimina un empleado (ya existe el
+      punto de enganche: <code>recognizer.cargar_conocidos()</code> se llama en
+      <code>empleados.py</code> cada vez que cambia algo — ahí mismo se reconstruye el
+      índice).
+    </li>
+  </ol>
+
+  <div class="callout warn">
+    <code>IndexFlatL2</code> sigue siendo búsqueda exacta (no aproximada): ya es mucho
+    más rápida que el bucle en Python porque está optimizada en C++/SIMD, pero para
+    <strong>millones</strong> de rostros conviene un índice aproximado
+    (<code>IndexIVFFlat</code>, <code>IndexHNSW</code>) — un poco menos preciso, mucho
+    más rápido. Reconstruir el índice completo en cada alta/baja de empleado es
+    aceptable hasta unos cuantos miles de personas; a mayor escala conviene un índice
+    que soporte agregar/quitar vectores sin reconstruir todo. Este cambio <strong>no
+    requiere GPU ni cambiar el modelo de reconocimiento</strong> — es el más barato de
+    la lista y el que recomendaría primero si el proyecto crece.
+  </div>
+
+  <h2 id="s2"><span class="badge paso2">Punto 2</span></h2>
+  <h2 style="border-top:none;margin-top:8px;padding-top:0;">GPU y modelos de reconocimiento más modernos</h2>
+
+  <h3>El problema</h3>
+  <p>
+    <code>face_recognition</code>/<code>dlib</code> corre en <strong>CPU</strong>. La
+    detección de rostros y el cálculo de cada encoding son las operaciones más pesadas
+    del pipeline, y en CPU tienen un techo de velocidad bajo — más notorio cuantas más
+    caras haya en un mismo frame o cuantas más cámaras se procesen en paralelo.
+  </p>
+
+  <h3>La solución</h3>
+  <p>
+    Migrar a modelos de reconocimiento facial más modernos, corriendo en
+    <strong>GPU</strong> vía ONNX Runtime o TensorRT. Los más usados en la industria hoy
+    son variantes de <strong>ArcFace/InsightFace</strong> para generar los encodings,
+    con <strong>RetinaFace</strong> o similar para la detección. Son más rápidos
+    <strong>y</strong> más precisos que dlib.
+  </p>
+
+  <h3>Instrucciones</h3>
+  <ol>
+    <li>Conseguir un servidor/VPS con GPU NVIDIA (o una instancia cloud con GPU — AWS <code>g4dn</code>/<code>g5</code>, GCP con T4/L4, o un servidor propio con una GPU de gama media alcanza).</li>
+    <li>Instalar drivers NVIDIA + CUDA + cuDNN compatibles con la GPU.</li>
+    <li>Reemplazar <code>face_recognition</code> por <code>insightface</code> (<code>pip install insightface onnxruntime-gpu</code>) o un pipeline equivalente en ONNX Runtime/TensorRT.</li>
+    <li>Reescribir <code>recognition.py</code> para usar la API del nuevo modelo (detección + extracción de embedding) en vez de <code>face_recognition.face_locations</code>/<code>face_encodings</code>.</li>
+    <li><strong>Volver a generar los encodings de todos los empleados ya cargados</strong> (ver consideración más abajo).</li>
+    <li>Si se procesan varias cámaras a la vez, agrupar los frames en <strong>lotes (batching)</strong> antes de mandarlos al modelo — las GPU rinden mucho mejor procesando varias imágenes juntas que una por una.</li>
+  </ol>
+
+  <div class="callout warn">
+    Los encodings de un modelo <strong>no son compatibles</strong> con los de otro. Los
+    vectores que genera dlib no se pueden comparar contra los que genera ArcFace — son
+    espacios matemáticos distintos. Migrar de modelo implica <strong>volver a procesar
+    todas las fotos de referencia</strong> de <code>conocidos/</code> (no se pierden las
+    fotos, pero sí hay que recalcular los encodings guardados). Además tiene un costo de
+    infraestructura real: una GPU dedicada es más cara que un VPS común — vale la pena a
+    partir de cierta escala, no antes. Es el cambio que <strong>más impacto tiene en
+    velocidad pura</strong> (mejoras de 10x a 50x son típicas), pero también el que más
+    esfuerzo de desarrollo/infraestructura lleva de los cuatro.
+  </div>
+
+  <h2 id="s3"><span class="badge paso3">Punto 3</span></h2>
+  <h2 style="border-top:none;margin-top:8px;padding-top:0;">Arquitectura de colas para muchas cámaras en simultáneo</h2>
+
+  <h3>El problema</h3>
+  <p>
+    Hoy, <code>tracking/service.py</code> corre un hilo por cámara <strong>dentro del
+    mismo proceso</strong> del backend. Funciona bien hasta cierto punto (unas cuantas
+    decenas de cámaras, según CPU disponible), pero todo compite por los mismos
+    recursos del único servidor, y si el proceso se cae, se cae todo el tracking junto
+    con la API.
+  </p>
+
+  <h3>La solución</h3>
+  <p>
+    Desacoplar la <strong>captura</strong> de frames del <strong>procesamiento</strong>
+    (detección + reconocimiento) usando una cola de mensajes, y tener varios
+    <strong>workers</strong> (procesos o contenedores independientes) consumiendo de esa
+    cola en paralelo. Así se puede escalar horizontalmente — agregar más workers cuando
+    hacen falta — sin tocar el resto del sistema.
+  </p>
+  <pre class="diagrama">Cámaras → [captura liviana] → Cola (Redis/RabbitMQ) → Worker 1 (reconocimiento)
+                                                     → Worker 2 (reconocimiento)
+                                                     → Worker 3 (reconocimiento)
+                                                                 ↓
+                                                          Base de datos</pre>
+
+  <h3>Instrucciones</h3>
+  <ol>
+    <li>Levantar un broker de mensajes: <strong>Redis</strong> (más simple, <code>redis-server</code> o contenedor Docker) o <strong>RabbitMQ</strong> (más robusto para colas complejas).</li>
+    <li>Elegir un framework de tareas en background: <strong>Celery</strong> (el más usado con Python) o <strong>RQ</strong> (más simple, basado en Redis) o <strong>Arq</strong> (async, también sobre Redis).</li>
+    <li>
+      Separar el proceso actual en dos roles:
+      <ul>
+        <li><strong>Productor</strong>: sigue conectándose a cada cámara por RTSP y captura frames, pero en vez de procesarlos ahí mismo, los publica en la cola (como bytes JPEG + metadata de la cámara).</li>
+        <li><strong>Worker(s)</strong>: procesos separados (se pueden correr varias instancias, incluso en máquinas distintas) que toman frames de la cola, corren <code>recognizer.reconocer()</code>, y escriben el resultado en la base de datos.</li>
+      </ul>
+    </li>
+    <li>Contenerizar con Docker Compose, con un servicio por worker y <code>replicas</code> para escalar la cantidad según necesidad.</li>
+  </ol>
+
+  <div class="callout warn">
+    El <code>session_tracker.py</code> actual asume que se procesa de a una detección
+    por vez para decidir si abre/cierra una sesión. Con varios workers escribiendo en
+    paralelo hay que cuidar las condiciones de carrera (dos workers detectando a la
+    misma persona casi al mismo tiempo en cámaras distintas) — conviene un lock por
+    persona (ej. un lock distribuido en Redis) al momento de abrir/cerrar sesiones. Este
+    punto <strong>depende del punto 4</strong> (base de datos): SQLite no soporta bien
+    escrituras concurrentes desde varios procesos a la vez, así que antes de escalar a
+    múltiples workers conviene migrar a PostgreSQL. También suma una pieza de
+    infraestructura nueva (el broker) que hay que operar y monitorear.
+  </div>
+
+  <h2 id="s4"><span class="badge paso4">Punto 4</span></h2>
+  <h2 style="border-top:none;margin-top:8px;padding-top:0;">Base de datos: de SQLite a PostgreSQL</h2>
+
+  <h3>El problema</h3>
+  <p>
+    SQLite (lo que usa el sistema hoy, <code>backend/tracking.db</code>) permite
+    <strong>un solo escritor a la vez</strong>. Es ideal para esta prueba de concepto
+    por su simplicidad (un solo archivo, cero configuración), pero se vuelve un cuello
+    de botella real en cuanto hay varias cámaras o workers escribiendo detecciones al
+    mismo tiempo.
+  </p>
+
+  <h3>La solución</h3>
+  <p>
+    Migrar a <strong>PostgreSQL</strong>, que sí soporta múltiples conexiones escribiendo
+    en paralelo de forma segura. De paso, instalando la extensión
+    <strong><code>pgvector</code></strong>, PostgreSQL puede resolver también el punto 1
+    (búsqueda de vectores) en la misma base, sin sumar otro sistema aparte.
+  </p>
+
+  <h3>Instrucciones</h3>
+  <ol>
+    <li>Levantar un servidor PostgreSQL (VPS propio, contenedor Docker, o un servicio administrado como RDS/Cloud SQL/Supabase).</li>
+    <li>Instalar la extensión <code>pgvector</code> si también se va a resolver el punto 1 ahí: <code>CREATE EXTENSION vector;</code></li>
+    <li>Instalar el driver Python: <code>pip install psycopg2-binary</code> (o <code>asyncpg</code> si se migra a un stack async).</li>
+    <li>Reescribir <code>tracking/db.py</code>: cambiar la conexión de <code>sqlite3.connect(...)</code> al driver de Postgres, y ajustar las pocas diferencias de sintaxis SQL entre SQLite y Postgres (tipos de datos, <code>AUTOINCREMENT</code> → <code>SERIAL</code>/<code>IDENTITY</code>, <code>ON CONFLICT</code> tiene una sintaxis un poco distinta, etc.). El resto de la lógica no debería necesitar cambios porque ya está separada del detalle de SQL.</li>
+    <li>Migrar los datos existentes (<code>tracking.db</code> → Postgres) con un script simple que lea cada tabla de SQLite y la inserte en Postgres.</li>
+    <li>Sumar un <strong>pool de conexiones</strong> (ej. <code>psycopg2.pool</code> o PgBouncer delante de Postgres) para que muchos workers concurrentes no agoten las conexiones disponibles.</li>
+  </ol>
+
+  <div class="callout warn">
+    Es el cambio con <strong>menor riesgo técnico</strong> de los cuatro (es una
+    migración de base de datos bien conocida, no un cambio de algoritmo ni de
+    infraestructura exótica), pero agrega una pieza más para operar: hay que hacer
+    backups, monitorear el servidor, gestionar accesos. Si se planea implementar el
+    punto 3, este punto es <strong>prerrequisito</strong> — sin esto, escalar workers
+    solo va a mover el cuello de botella a la base de datos. No hace falta migrar todo
+    de una — se puede hacer en un momento de mantenimiento planificado, con la base
+    actual de SQLite como respaldo hasta confirmar que todo funciona igual en Postgres.
+  </div>
+
+  <h2 id="resumen">Resumen y orden sugerido</h2>
+  <table>
+    <thead><tr><th>#</th><th>Cambio</th><th>Impacto en velocidad</th><th>Costo/esfuerzo</th><th>Cuándo se justifica</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Índice de vectores (FAISS)</td><td>Alto cuando hay muchos empleados</td><td>Bajo</td><td>Cientos/miles de empleados cargados</td></tr>
+      <tr><td>4</td><td>PostgreSQL</td><td>Medio (destraba el punto 3)</td><td>Medio</td><td>Varias cámaras/workers escribiendo a la vez</td></tr>
+      <tr><td>3</td><td>Colas + workers</td><td>Alto en throughput con muchas cámaras</td><td>Medio-alto</td><td>Decenas de cámaras en simultáneo</td></tr>
+      <tr><td>2</td><td>GPU + modelo moderno</td><td>Muy alto por imagen procesada</td><td>Alto (infraestructura + re-enrolar a todos)</td><td>Necesidad real de latencia casi nula, o volumen muy alto de cámaras/imágenes</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card">
+    <h4>En una frase</h4>
+    <p style="margin-bottom:0;">
+      No hace falta implementar los cuatro puntos para tener un sistema notablemente
+      más rápido — el punto 1 por sí solo, bien implementado, ya resuelve el escenario
+      más común (crece la cantidad de empleados, no la cantidad de cámaras). Los puntos
+      3 y 4 se justifican cuando crece la cantidad de <strong>cámaras simultáneas</strong>.
+      El punto 2 es el salto más grande y el único que conviene evaluar solo cuando los
+      otros tres ya no alcancen.
+    </p>
+  </div>
+
+  <footer>
+    <span>CamRecon — Documentación técnica</span>
+    <span>Escalabilidad y rendimiento</span>
+  </footer>
+
+</div>
+</body>
+</html>

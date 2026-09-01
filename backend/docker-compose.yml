@@ -1,0 +1,9 @@
+services:
+  reconocimiento-facial-backend:
+    build: .
+    container_name: reconocimiento-facial-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./conocidos:/app/conocidos
+    restart: unless-stopped
